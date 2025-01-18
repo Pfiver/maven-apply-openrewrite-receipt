@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>net.patrickpfeifer</groupId>
+        <artifactId>maven-apply-openrewrite-receipt</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>maven-apply-openrewrite-receipt-application</artifactId>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>net.patrickpfeifer</groupId>
+                <artifactId>maven-apply-openrewrite-receipt-receipt</artifactId>
+                <version>${project.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-sources</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>net.patrickpfeifer</groupId>
+                                    <artifactId>maven-apply-openrewrite-receipt-receipt</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                            <includes>net/patrickpfeifer/ReceiptMain.java</includes>
+                            <outputDirectory>target/dependency-sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>add-dependency-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/dependency-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>6.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>runNoFork</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <activeRecipes>
+                                <recipe>net.patrickpfeifer.SayHelloRecipe</recipe>
+                            </activeRecipes>
+                            <exclusions>*/src/**</exclusions>
+                            <runPerSubmodule>true</runPerSubmodule>
+                            <skipMavenParsing>true</skipMavenParsing>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.patrickpfeifer</groupId>
+                        <artifactId>maven-apply-openrewrite-receipt-receipt</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
