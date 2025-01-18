@@ -85,7 +85,10 @@
                             <activeRecipes>
                                 <recipe>net.patrickpfeifer.SayHelloRecipe</recipe>
                             </activeRecipes>
-                            <exclusions>*/src/**</exclusions>
+                            <exclusions>
+                                <exclude>src/**</exclude>
+                                <exclude>*/src/**</exclude>
+                            </exclusions>
                             <runPerSubmodule>true</runPerSubmodule>
                             <skipMavenParsing>true</skipMavenParsing>
                         </configuration>
